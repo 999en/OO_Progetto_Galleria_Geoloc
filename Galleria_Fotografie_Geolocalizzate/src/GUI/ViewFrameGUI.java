@@ -2,6 +2,7 @@ package GUI;
 
 import CONTROLLER.Controller;
 import MAIN.Main;
+import MAIN.User;
 import org.postgresql.util.PSQLException;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * The type Menu impiegati gui.
+ * The type Menu Frame gui.
  */
 
 public class ViewFrameGUI {
@@ -27,7 +28,7 @@ public class ViewFrameGUI {
     private final int idvideosec;
 
     /**
-     * Instantiates a new Menu impiegati gui.
+     * Instantiates a new Menu frame gui.
      *
      * @param controller          the controller
      * @param frameMenuPrincipale the frame menu principale
@@ -147,6 +148,17 @@ public class ViewFrameGUI {
                 // La foto si trova nella prima colonna della tabella
                 int fotoSelezionata = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 1).toString());
                 int videoSelezionato = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString());
+
+                boolean ownerCheck;
+
+                try {
+                    ownerCheck = controller.controlloProprietarioVideo(idvideosec, User.getInstance().getUsername());
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+                if (ownerCheck) {
+
+
                 int response = JOptionPane.showOptionDialog(frameMenuFotografie, "Sei sicuro di voler eliminare il frame " + fotoSelezionata + "?", "Conferma eliminazione", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Si", "No"}, "Si");
 
                 if (response == JOptionPane.YES_OPTION) {
@@ -160,6 +172,9 @@ public class ViewFrameGUI {
                     }
                     //aggiorno la tabella appena dopo l'eliminazione dell'utente
                     updateTable(controller, colonneTabella);
+
+                } else { JOptionPane.showMessageDialog(null, "Puoi eliminare solo video di cui sei il proprietario!");
+                }
                 }
             } else {
                 // L'utente non ha selezionato una cella
@@ -167,9 +182,19 @@ public class ViewFrameGUI {
             }
         });
 
+
         // BOTTONE INSERISCI FRAME
         JButton bottoneInserisci = new JButton("Inserisci Frame");
         bottoneInserisci.addActionListener(e -> {
+            boolean ownerCheck;
+
+            try {
+                ownerCheck = controller.controlloProprietarioVideo(idvideosec, User.getInstance().getUsername());
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            if (ownerCheck) {
+
             InserimentoFrameGUI dialog = new InserimentoFrameGUI(idvideosec, controller, frameMenuFotografie);
             frameMenuFotografie.setVisible(false);
             dialog.setVisible(true);
@@ -182,6 +207,9 @@ public class ViewFrameGUI {
 
                 }
             });
+            } else {
+                JOptionPane.showMessageDialog(null, "Non hai i permessi inserire il frame");
+            }
         });
 
         //BOTTONE PROFILO FOTO
@@ -197,11 +225,17 @@ public class ViewFrameGUI {
                 int ordineSelezionato = Integer.parseInt(table.getValueAt(table.getSelectedRow(), 3).toString());
 
                 try {
+                    boolean ownerCheck = controller.controlloProprietarioVideo(idvideosec, User.getInstance().getUsername());
+
+                    if (ownerCheck) {
                     // Creo un'istanza della finestra di dialogo ProfiloImpiegato
                     ViewModificaFrameGUI profiloFoto = new ViewModificaFrameGUI(fotoSelezionata, ordineSelezionato,controller, frameMenuFotografie);
                     frameMenuFotografie.setVisible(false);
                     // Mostro la finestra di dialogo
                     profiloFoto.setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Non hai i permessi per modificare questo video");
+                    }
                 } catch (java.sql.SQLException ex) {
                     // Gestisci l'eccezione qui, ad esempio mostrando un messaggio di errore
                     ex.printStackTrace(); // Stampa la traccia dell'eccezione
