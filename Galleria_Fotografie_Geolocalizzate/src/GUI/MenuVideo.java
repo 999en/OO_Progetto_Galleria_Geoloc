@@ -184,7 +184,7 @@ public class MenuVideo
                         //aggiorno la tabella appena dopo l'eliminazione del video
                         updateTable(controller,colonneTabella);
                     }
-                } else { JOptionPane.showMessageDialog(null, "Puoi eliminare solo foto di cui sei il proprietario!");
+                } else { JOptionPane.showMessageDialog(null, "Puoi eliminare solo video di cui sei il proprietario!");
                 }
             } else {
                 // L'utente non ha selezionato una cella
@@ -205,16 +205,12 @@ public class MenuVideo
                 String idVideoSelezionatoStr = table.getValueAt(table.getSelectedRow(), 0).toString();
                 int idVideoSelezionato = Integer.parseInt(idVideoSelezionatoStr);
                 try {
-                    boolean ownerCheck = controller.controlloProprietarioVideo(idVideoSelezionato, User.getInstance().getUsername());
 
-                    if (ownerCheck) {
                         // Creo un'istanza della finestra di dialogo
                         frameMenuVideo.setVisible(false);
                         ViewFrameGUI profiloUtente = new ViewFrameGUI(idVideoSelezionato, controller, frameMenuVideo);
                         // Mostro la finestra di dialogo
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Non hai i permessi per modificare questa foto");
-                    }
+
                 } catch (java.sql.SQLException ex) {
                     // Gestisci l'eccezione qui, ad esempio mostrando un messaggio di errore
                     ex.printStackTrace(); // Stampa la traccia dell'eccezione
@@ -248,7 +244,7 @@ public class MenuVideo
                         profiloUtente.setVisible(true);
 
                     } else {
-                        JOptionPane.showMessageDialog(null, "Non hai i permessi per modificare questa foto");
+                        JOptionPane.showMessageDialog(null, "Non hai i permessi per modificare questo video");
                     }
                 } catch (java.sql.SQLException ex) {
                     // Gestisci l'eccezione qui, ad esempio mostrando un messaggio di errore
